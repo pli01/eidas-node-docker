@@ -1,0 +1,21 @@
+version: '3.5'
+
+services:
+  eidas-node-mock:
+    build:
+      context: docker/wildfly
+      target: mock
+    image: eidas-node-mock:wildfly-latest
+    platform: linux/amd64
+    container_name: eidas-node-mock
+    ports:
+      - "8080:8080"
+#    volumes:
+#      - "./config/config/:/config"
+#      - "./config/keystore/:/keystore"
+#    networks:
+#      - eidas-network
+
+#networks:
+#  eidas-network:
+#    name: eidas-network

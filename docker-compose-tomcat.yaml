@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+  eidas-node-mock:
+    build:
+      context: docker/tomcat
+      target: mock
+    image: eidas-node-mock:tomcat-latest
+    platform: linux/amd64
+    container_name: eidas-node-mock
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - all
+    ports:
+      - "8080:8080"
+#    environment:
+#      - "JAVA_OPTS=${JAVA_OPTS}"
+#      - "LOG_HOME=/data/logs/eidas"
+#      - "CATALINA_OUT=/data/logs/tomcat/catalina.out"
+#      - "CATALINA_TMPDIR=/data/tomcat"
+#    volumes:
+#      - "./config/config/:/config"
+#      - "./config/keystore/:/keystore"
+#     - "./logs/:/data/logs"
+#    networks:
+#      - eidas-network
+
+#networks:
+#  eidas-network:
+#    name: eidas-network
