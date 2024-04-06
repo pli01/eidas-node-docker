@@ -2,14 +2,14 @@
 
 This repository provides Dockerfiles of the [EU eIDAS-Node Software](https://ec.europa.eu/digital-building-blocks/sites/display/DIGITAL/All+releases)
 
-At the moment, this project is only suitable for test and demonstration.
+At the moment, this project is only suitable for test and demonstration
 
 2 Applications Servers are provided in this repository
 - [WildFly](https://www.wildfly.org/)
 - [Tomcat](https://tomcat.apache.org/)
 - JDK: OpenJDK Runtime Environment Temurin-11 [temurin](https://adoptium.net/fr/temurin/)
 
-WildFly Dockerfile are inspired by the work of https://github.com/ecsec/eidas-node-docker
+WildFly Dockerfile and Kubernetes demo are inspired by the work of https://github.com/ecsec/eidas-node-docker
 
 Requirements:
 - make
@@ -19,6 +19,8 @@ Requirements:
 eIDAS-Node Images are available:
 - eidas-node : eIDAS-Node with only EidasNode component
 - eidas-node-mock : eIDAS-Node with all components (EidasNode, IdP, SP, SpecificConnector, SpecificProxyService) and demo configuration files
+
+There is also a kubernetes demo, in kubernetes directory.
 
 ## Versions
 

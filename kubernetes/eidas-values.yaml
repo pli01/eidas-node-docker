@@ -1,0 +1,181 @@
+
+replicaCount: 1
+
+image:
+  # -- Repository from where the eIDAS-Node Image will be downloaded
+  repository: localhost:5001/eidas-node-mock
+  # -- Pull Policy of the eIDAS-Node Image
+  pullPolicy: Always
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: tomcat-latest
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# -- You can provide some customized init containers here.
+initContainers: []
+
+# -- You can provide custom volumes (like for config files, keystores, ...).
+# You can also overwrite the default wildfly configuration.
+# If you do want to specify volumes, uncomment the following
+# lines, adjust them as necessary, and remove the brackets after 'volumes:'.
+volumes:
+  - name: eidas-config-volume
+    configMap:
+      name: eidas-configmap
+      items:
+        - key: eidas.xml
+          path: eidas.xml
+        - key: sp.properties
+          path: sp/sp.properties
+        - key: specificConnector.xml
+          path: specificConnector/specificConnector.xml
+        - key: specificProxyService.xml
+          path: specificProxyService/specificProxyService.xml
+        - key: MetadataFetcher_Connector.properties
+          path: metadata/MetadataFetcher_Connector.properties
+        - key: MetadataFetcher_Service.properties
+          path: metadata/MetadataFetcher_Service.properties
+
+  # - name: keystore-volume
+  #   persistentVolumeClaim:
+  #     claimName: eidas-node-keystore-claim
+  # - name: config-volume
+  #   persistentVolumeClaim:
+  #     claimName: eidas-node-config-claim
+  # - name: wildfly-config-volume
+  #   configMap:
+  #     name: wildfly-config
+
+# -- Here you can define where the volumes above will be mounted to.
+# Config Files of the eIDAS-Node should be mounted to "/config/eidas" and keystores should be mounted 
+# to "/config/keystore" (default). You can overwrite this default behavior by using the env variables mentioned below.
+# If you do want to specify volumeMounts, uncomment the following
+# lines, adjust them as necessary, and remove the brackets after 'volumeMounts:'.
+volumeMounts:
+  - name: eidas-config-volume
+    mountPath: /config/eidas/eidas.xml
+    subPath: eidas.xml
+  - name: eidas-config-volume
+    mountPath: /config/eidas/sp/sp.properties
+    subPath: sp/sp.properties
+  - name: eidas-config-volume
+    mountPath: /config/eidas/specificConnector/specificConnector.xml
+    subPath: specificConnector/specificConnector.xml
+  - name: eidas-config-volume
+    mountPath: /config/eidas/specificProxyService/specificProxyService.xml
+    subPath: specificProxyService/specificProxyService.xml
+  - name: eidas-config-volume
+    mountPath: /config/eidas/metadata/MetadataFetcher_Connector.properties
+    subPath: metadata/MetadataFetcher_Connector.properties
+  - name: eidas-config-volume
+    mountPath: /config/eidas/metadata/MetadataFetcher_Service.properties
+    subPath: metadata/MetadataFetcher_Service.properties
+
+  # - name: keystore-volume
+  #   mountPath: /config/keystore
+  # - name: config-volume
+  #   mountPath: /config/eidas
+  # - name: wildfly-config-volume
+  #   mountPath: /opt/jboss/wildfly/standalone/configuration/standalone.xml
+  #   subPath: standalone.xml
+
+# -- Here you can overwrite env variables in the eIDAS-Node Deployment.
+envs:
+  # - name: EIDAS_CONFIG_REPOSITORY
+  #   value: "/config/eidas"
+  # - name: SPECIFIC_CONNECTOR_CONFIG_REPOSITORY
+  #   value: "/config/eidas"
+  # - name: SPECIFIC_PROXY_SERVICE_CONFIG_REPOSITORY
+  #   value: "/config/eidas/specificProxyService"
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use. If not set and create is true, a name is generated using the fullname template.
+  name: ""
+
+# -- Additional Pod Annotations for the eIDAS-Node Deployment.
+podAnnotations: {}
+
+# -- Pod Security Context for the eIDAS-Node Deployment.
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# -- Security Context for the eIDAS-Node Deployment.
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  # -- Service Type that will be used.
+  type: ClusterIP
+  # -- Service Port.
+  port: 80
+
+ingress:
+  # -- Indicates whether ingress is enabled or not.
+  enabled: true
+  className: nginx
+  # -- Additional Ingress annotations.
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # kubernetes.io/tls-acme: "true"
+  # -- Host-Specific Configuration.
+  hosts:
+    - host: eidas-node.127.0.0.1.nip.io
+      paths:
+        - path: /
+          pathType: Prefix
+  # -- TLS-Specific Configuration.
+  tls: []
+  #  - secretName: eidas-node-tls
+  #    hosts:
+  #      - eidas-node.local
+
+# -- Defining resource limits for the eIDAS-Node Deployment.
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# -- Defining liveness/readiness probes for the eIDAS-Node Deployment.
+probes: {}
+  # Enabling liveness/readiness probes for the eIDAS-Node Deployment. If you do want to specifiy probes,
+  # uncomment the following lines,  adjust them as necessary, and remove the curly braces after 'probes:'.
+  # livenessProbe:
+  #   httpGet:
+  #     path: /eidas-node
+  #     port: http
+  #   initialDelaySeconds: 10
+  #   periodSeconds: 3
+  # readinessProbe:
+  #   httpGet:
+  #     path: /eidas-node
+  #     port: http
+  #   initialDelaySeconds: 10
+  #   periodSeconds: 3
+
+# -- Node-Selector Specific Configuration.
+nodeSelector: {}
+
+# -- Tolerations
+tolerations: []
+
+# -- Affinity-Configuration for the eIDAS-Node Deployment.
+affinity: {}
