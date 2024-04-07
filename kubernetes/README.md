@@ -17,6 +17,7 @@ make build-tomcat
 
 - import image in local registry (demo)
 ```
+docker tag eidas-node-mock:tomcat-latest localhost:5001/eidas-node-mock:tomcat-latest
 docker push localhost:5001/eidas-node-mock:tomcat-latest
 ```
 

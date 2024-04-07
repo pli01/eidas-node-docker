@@ -21,6 +21,20 @@ initContainers: []
 # If you do want to specify volumes, uncomment the following
 # lines, adjust them as necessary, and remove the brackets after 'volumes:'.
 volumes:
+  # tmp
+  - name: tmp-dir
+    emptyDir: {}
+  # eidas Logs
+  - name: eidas-logs-dir
+    emptyDir: {}
+  # tomcat workdir
+  - name: tomcat-work-dir
+    emptyDir: {}
+  - name: tomcat-temp-dir
+    emptyDir: {}
+  # tomcat config
+  - name: tomcat-localhost-dir
+    emptyDir: {}
   - name: eidas-config-volume
     configMap:
       name: eidas-configmap
@@ -37,7 +51,6 @@ volumes:
           path: metadata/MetadataFetcher_Connector.properties
         - key: MetadataFetcher_Service.properties
           path: metadata/MetadataFetcher_Service.properties
-
   # - name: keystore-volume
   #   persistentVolumeClaim:
   #     claimName: eidas-node-keystore-claim
@@ -49,11 +62,25 @@ volumes:
   #     name: wildfly-config
 
 # -- Here you can define where the volumes above will be mounted to.
-# Config Files of the eIDAS-Node should be mounted to "/config/eidas" and keystores should be mounted 
+# Config Files of the eIDAS-Node should be mounted to "/config/eidas" and keystores should be mounted
 # to "/config/keystore" (default). You can overwrite this default behavior by using the env variables mentioned below.
 # If you do want to specify volumeMounts, uncomment the following
 # lines, adjust them as necessary, and remove the brackets after 'volumeMounts:'.
 volumeMounts:
+  - mountPath: /tmp
+    name: tmp-dir
+  # tomcat workdir
+  - name: tomcat-work-dir
+    mountPath: /usr/local/tomcat/work
+  - name: tomcat-temp-dir
+    mountPath: /usr/local/tomcat/temp
+  # tomcat confdir
+  - name: tomcat-localhost-dir
+    mountPath: /usr/local/tomcat/conf/Catalina/localhost
+  # eidas logs
+  - name: eidas-logs-dir
+    mountPath: /logs/eidas
+  # eidas configuration
   - name: eidas-config-volume
     mountPath: /config/eidas/eidas.xml
     subPath: eidas.xml
@@ -72,7 +99,6 @@ volumeMounts:
   - name: eidas-config-volume
     mountPath: /config/eidas/metadata/MetadataFetcher_Service.properties
     subPath: metadata/MetadataFetcher_Service.properties
-
   # - name: keystore-volume
   #   mountPath: /config/keystore
   # - name: config-volume
@@ -83,6 +109,8 @@ volumeMounts:
 
 # -- Here you can overwrite env variables in the eIDAS-Node Deployment.
 envs:
+  - name: LOG_HOME
+    value: "/logs/eidas"
   # - name: EIDAS_CONFIG_REPOSITORY
   #   value: "/config/eidas"
   # - name: SPECIFIC_CONNECTOR_CONFIG_REPOSITORY
@@ -106,10 +134,13 @@ podSecurityContext: {}
   # fsGroup: 2000
 
 # -- Security Context for the eIDAS-Node Deployment.
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
+#securityContext: {}
+securityContext:
+  privileged: false
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
