@@ -158,8 +158,9 @@
                resourceName="UserDatabase"/>
       </Realm>
 
+      <!-- Disable unpackWars / autodeploy -->
       <Host name="localhost"  appBase="webapps"
-            unpackWARs="true" autoDeploy="false">
+            unpackWARs="false" autoDeploy="false">
 
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->

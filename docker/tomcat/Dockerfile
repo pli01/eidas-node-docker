@@ -35,6 +35,8 @@ FROM tomcat:${TOMCAT_VERSION} as runner
 USER root
 # non root user
 ARG TOMCAT_USER=tomcat
+RUN apt-get -qy update  ; apt-get install -qy unzip
+
 RUN groupadd -r ${TOMCAT_USER} -g 1000 && \
     useradd -u 1000 -r -g ${TOMCAT_USER} -M -d /usr/local/tomcat -s /sbin/nologin -c "${TOMCAT_USER} user" ${TOMCAT_USER} && \
     chown -R ${TOMCAT_USER}:${TOMCAT_USER} /usr/local/tomcat
@@ -54,6 +56,8 @@ COPY files/tomcat/conf/console_logging.properties /usr/local/tomcat/conf/
 RUN mkdir -p /config/eidas/specificProxyService && \
     mkdir -p /config/keystore && \
     mkdir -p /work && \
+    # unzip war because of secure readonly FS
+    unzip /usr/local/tomcat/webapps/EidasNode.war -d /usr/local/tomcat/webapps/EidasNode ; rm -rf /usr/local/tomcat/webapps/EidasNode.war ; \
     chown -R ${TOMCAT_USER}:${TOMCAT_USER} /config && \
     chown -R ${TOMCAT_USER}:${TOMCAT_USER} /work && \
     # Provide Bouncycastle Module and overwrite security providers
@@ -87,6 +91,8 @@ COPY --from=builder --chown=${TOMCAT_USER}:${TOMCAT_USER} /data/config/ /tmp/con
 RUN cp -r /tmp/config/tomcat/* /config/eidas/ && \
     cp -r /tmp/config/keystore/* /config/keystore/ && \
     rm -rf /tmp/config && \
+    # unzip war because of secure readonly FS
+    ( for war in IdP SP SpecificConnector SpecificProxyService ; do unzip /usr/local/tomcat/webapps/$war.war -d /usr/local/tomcat/webapps/$war ; rm -rf /usr/local/tomcat/webapps/$war.war ; done ) && \
     chown -R ${TOMCAT_USER}:${TOMCAT_USER} /config /usr/local/tomcat
 
 # Stage last (default)

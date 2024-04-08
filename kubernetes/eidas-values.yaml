@@ -27,6 +27,9 @@ volumes:
   # eidas Logs
   - name: eidas-logs-dir
     emptyDir: {}
+  # ignite workdir
+  - name: ignite-work-dir
+    emptyDir: {}
   # tomcat workdir
   - name: tomcat-work-dir
     emptyDir: {}
@@ -69,6 +72,9 @@ volumes:
 volumeMounts:
   - mountPath: /tmp
     name: tmp-dir
+  # ignite workdir
+  - name: ignite-work-dir
+    mountPath: /work
   # tomcat workdir
   - name: tomcat-work-dir
     mountPath: /usr/local/tomcat/work
@@ -141,7 +147,7 @@ securityContext:
   capabilities:
     drop:
     - ALL
-  # readOnlyRootFilesystem: true
+  readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
 
