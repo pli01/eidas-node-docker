@@ -1,5 +1,6 @@
 ARG ALPINE_VERSION=3.19
 ARG TOMCAT_VERSION=9.0.87-jre11
+ARG TOMCAT_USER=tomcat
 
 # Stage builder
 FROM alpine:${ALPINE_VERSION} as builder
@@ -34,7 +35,7 @@ FROM tomcat:${TOMCAT_VERSION} as runner
 
 USER root
 # non root user
-ARG TOMCAT_USER=tomcat
+ARG TOMCAT_USER
 RUN apt-get -qy update  ; apt-get install -qy unzip
 
 RUN groupadd -r ${TOMCAT_USER} -g 1000 && \
@@ -80,6 +81,7 @@ ENV JAVA_OPTS_CUSTOM="-Xmx512m"
 
 # Stage mock
 FROM runner as mock
+ARG TOMCAT_USER
 COPY --from=builder --chown=${TOMCAT_USER}:${TOMCAT_USER} /data/TOMCAT/IdP.war /usr/local/tomcat/webapps/
 COPY --from=builder --chown=${TOMCAT_USER}:${TOMCAT_USER} /data/TOMCAT/SP.war /usr/local/tomcat/webapps/
 COPY --from=builder --chown=${TOMCAT_USER}:${TOMCAT_USER} /data/TOMCAT/SpecificConnector.war /usr/local/tomcat/webapps/
